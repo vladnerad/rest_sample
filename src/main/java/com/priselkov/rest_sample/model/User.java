@@ -28,4 +28,8 @@ public class User {
         this.pass = pass;
         this.name = name;
     }
+
+    public String getLogin() {
+        return login;
+    }
 }
