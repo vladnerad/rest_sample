@@ -32,13 +32,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public BasicResponse deleteUser(String login) {
         userRepository.deleteById(login);
-        return new BasicResponse(true, "User " + login + "deleted");
+        return new BasicResponse(true, "User " + login + " deleted");
     }
 
     @Override
     public BasicResponse addUserWithRoles(User newUser) {
         userRepository.save(newUser);
-        return new BasicResponse(true, "User " + newUser.getLogin() + "deleted");
+        return new BasicResponse(true, "User " + newUser.getLogin() + " created");
     }
 
     @Override
@@ -46,7 +46,7 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findById(user.getLogin()).isPresent()) {
             userRepository.delete(userRepository.findById(user.getLogin()).get());
             userRepository.save(user);
-            return new BasicResponse(true, "User " + user.getLogin() + "updated");
+            return new BasicResponse(true, "User " + user.getLogin() + " updated");
         }
         return new BasicResponse(false, "User doesn't exist");
     }
