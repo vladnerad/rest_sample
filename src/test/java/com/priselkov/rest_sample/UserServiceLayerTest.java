@@ -10,7 +10,7 @@ import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-public class UserServiceImplTest {
+public class UserServiceLayerTest {
 
     @Mock
     private UserRepository userRepository;
