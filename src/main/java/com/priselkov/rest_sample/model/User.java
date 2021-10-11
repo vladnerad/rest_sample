@@ -32,4 +32,16 @@ public class User {
     public String getLogin() {
         return login;
     }
+
+    public void setPass(String pass) {
+        this.pass = pass;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
 }
