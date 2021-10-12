@@ -41,6 +41,10 @@ public class UserController {
 
     @PutMapping("/{userlogin}")
     public ResponseEntity<BasicResponse> updateUser(@PathVariable String userlogin, @RequestBody User user) {
-        return new ResponseEntity<>(userService.updateUser(user), HttpStatus.CREATED);
+        BasicResponse basicResponse = userService.updateUser(userlogin, user);
+        if (basicResponse.getSuccess())
+            return new ResponseEntity<>(basicResponse, HttpStatus.CREATED);
+        else
+            return new ResponseEntity<>(basicResponse, HttpStatus.NOT_FOUND);
     }
 }

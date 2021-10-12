@@ -46,8 +46,8 @@ public class UserServiceLayerTest {
         userToUpd.setPass("newPass");
         userToUpd.setName("newName");
 
-        userService.updateUser(userToUpd);
-        userService.updateUser(userNotExisted);
+        userService.updateUser(userToUpd.getLogin(), userToUpd);
+        userService.updateUser(userNotExisted.getLogin(), userNotExisted);
 
         Mockito.verify(userRepository).save(userToUpd);
         Mockito.verify(userRepository, Mockito.never()).save(userNotExisted);
