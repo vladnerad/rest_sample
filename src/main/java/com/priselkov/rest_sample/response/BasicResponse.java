@@ -1,5 +1,6 @@
 package com.priselkov.rest_sample.response;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 
@@ -16,6 +17,7 @@ public class BasicResponse implements Serializable {
     private Boolean success;
 
     @JsonProperty("errors")
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private List<String> errors;
 
     public BasicResponse() {
@@ -28,5 +30,9 @@ public class BasicResponse implements Serializable {
 
     public Boolean getSuccess() {
         return success;
+    }
+
+    public List<String> getErrors() {
+        return errors;
     }
 }

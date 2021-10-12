@@ -6,6 +6,7 @@ import com.priselkov.rest_sample.model.User;
 import com.priselkov.rest_sample.response.BasicResponse;
 import com.priselkov.rest_sample.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -29,7 +30,7 @@ public class UserControllerLayerTest {
     private UserServiceImpl userService;
 
     @Test
-    public void addUser(){
+    public void addUser() {
         User user = new User("testLogin", "testPass", "testName");
         Mockito.when(userService.addUserWithRoles(Mockito.any())).thenReturn(new BasicResponse(true, null));
 
@@ -48,12 +49,13 @@ public class UserControllerLayerTest {
     }
 
     @Test
-    public void updateUser_success(){
+    public void updateUser_success() {
         User user = new User("testLogin", "testPass", "testName");
         User updated = new User("testLogin", "updated", "updated");
+        BasicResponse basicResponse = new BasicResponse(true, null);
 
         userService.addUserWithRoles(user);
-        Mockito.when(userService.updateUser(updated.getLogin(), updated)).thenReturn(new BasicResponse(true, null));
+        Mockito.when(userService.updateUser(ArgumentMatchers.eq(updated.getLogin()), ArgumentMatchers.any(User.class))).thenReturn(basicResponse);
 
         ObjectMapper mapper = new ObjectMapper();
 
@@ -64,23 +66,22 @@ public class UserControllerLayerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
             )
-                    .andExpect(status().isCreated())
-                    .andExpect(content().json(mapper.writeValueAsString(new BasicResponse(true, null))));
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
+
+            Mockito.verify(userService, Mockito.times(1)).updateUser(ArgumentMatchers.eq(updated.getLogin()), ArgumentMatchers.any(User.class));
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
     @Test
-    public void updateUser_nullId(){
+    public void updateUser_notFound() {
 
         User updated = new User("not_existed", "updated", "updated");
-
-        BasicResponse basicResponse = new BasicResponse(true, Collections.singletonList("User doesn't exist"));
-
-//        Mockito.when(userService.updateUser(updated.getLogin(), updated)).thenReturn(basicResponse);
-
+        BasicResponse basicResponse = new BasicResponse(false, Collections.singletonList("User doesn't exist"));
         ObjectMapper mapper = new ObjectMapper();
+        Mockito.when(userService.updateUser(ArgumentMatchers.eq(updated.getLogin()), ArgumentMatchers.any(User.class))).thenReturn(basicResponse);
 
         try {
             mockMvc.perform(
@@ -89,10 +90,13 @@ public class UserControllerLayerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
             )
-                    .andExpect(status().isNotFound())
+                    .andExpect(status().isNoContent())
                     .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
+
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        Mockito.verify(userService, Mockito.times(1)).updateUser(ArgumentMatchers.eq(updated.getLogin()), ArgumentMatchers.any(User.class));
     }
 }

@@ -43,8 +43,8 @@ public class UserController {
     public ResponseEntity<BasicResponse> updateUser(@PathVariable String userlogin, @RequestBody User user) {
         BasicResponse basicResponse = userService.updateUser(userlogin, user);
         if (basicResponse.getSuccess())
-            return new ResponseEntity<>(basicResponse, HttpStatus.CREATED);
+            return new ResponseEntity<>(basicResponse, HttpStatus.OK);
         else
-            return new ResponseEntity<>(basicResponse, HttpStatus.NOT_FOUND);
+            return new ResponseEntity<>(basicResponse, HttpStatus.NO_CONTENT);
     }
 }
