@@ -99,4 +99,49 @@ public class UserControllerLayerTest {
 
         Mockito.verify(userService, Mockito.times(1)).updateUser(ArgumentMatchers.eq(updated.getLogin()), ArgumentMatchers.any(User.class));
     }
+
+    @Test
+    public void deleteUser_success() {
+        User user = new User("testLogin", "testPass", "testName");
+        userService.addUserWithRoles(user);
+        BasicResponse basicResponse = new BasicResponse(true, null);
+        Mockito.when(userService.deleteUser(ArgumentMatchers.eq(user.getLogin()))).thenReturn(basicResponse);
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.delete("/api/users/" + user.getLogin())
+                            .accept(MediaType.APPLICATION_JSON)
+            )
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Mockito.verify(userService, Mockito.times(1)).deleteUser(user.getLogin());
+    }
+
+    @Test
+    public void deleteUser_notExists() {
+        User deleted = new User("not_existed", "deleted", "deleted");
+        BasicResponse basicResponse = new BasicResponse(false, Collections.singletonList("User doesn't exist"));
+        Mockito.when(userService.deleteUser(ArgumentMatchers.eq(deleted.getLogin()))).thenReturn(basicResponse);
+        ObjectMapper mapper = new ObjectMapper();
+
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.delete("/api/users/" + deleted.getLogin())
+                            .accept(MediaType.APPLICATION_JSON)
+            )
+                    .andExpect(status().isNoContent())
+                    .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        Mockito.verify(userService, Mockito.times(1)).deleteUser(deleted.getLogin());
+    }
 }

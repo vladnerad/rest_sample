@@ -33,8 +33,11 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BasicResponse deleteUser(String login) {
-        userRepository.deleteById(login);
-        return new BasicResponse(true, null);
+        if (login != null && userRepository.findById(login).isPresent()) {
+            userRepository.deleteById(login);
+            return new BasicResponse(true, null);
+        }
+        return new BasicResponse(false, Collections.singletonList("User doesn't exist"));
     }
 
     @Override

@@ -31,7 +31,12 @@ public class UserController {
 
     @DeleteMapping("/{userlogin}")
     public ResponseEntity<BasicResponse> deleteUser(@PathVariable String userlogin) {
-        return new ResponseEntity<>(userService.deleteUser(userlogin), HttpStatus.OK);
+        BasicResponse basicResponse = userService.deleteUser(userlogin);
+        if (basicResponse.getSuccess()) {
+            return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(basicResponse, HttpStatus.NO_CONTENT);
+        }
     }
 
     @PostMapping
