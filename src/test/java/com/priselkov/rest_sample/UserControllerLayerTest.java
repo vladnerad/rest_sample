@@ -90,7 +90,7 @@ public class UserControllerLayerTest {
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
             )
-                    .andExpect(status().isNoContent())
+                    .andExpect(status().isBadRequest())
                     .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
 
         } catch (Exception e) {
@@ -135,7 +135,7 @@ public class UserControllerLayerTest {
                     MockMvcRequestBuilders.delete("/api/users/" + deleted.getLogin())
                             .accept(MediaType.APPLICATION_JSON)
             )
-                    .andExpect(status().isNoContent())
+                    .andExpect(status().isBadRequest())
                     .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
 
         } catch (Exception e) {

@@ -35,7 +35,7 @@ public class UserController {
         if (basicResponse.getSuccess()) {
             return new ResponseEntity<>(basicResponse, HttpStatus.OK);
         } else {
-            return new ResponseEntity<>(basicResponse, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(basicResponse, HttpStatus.BAD_REQUEST);
         }
     }
 
@@ -50,6 +50,6 @@ public class UserController {
         if (basicResponse.getSuccess())
             return new ResponseEntity<>(basicResponse, HttpStatus.OK);
         else
-            return new ResponseEntity<>(basicResponse, HttpStatus.NO_CONTENT);
+            return new ResponseEntity<>(basicResponse, HttpStatus.BAD_REQUEST);
     }
 }

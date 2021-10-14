@@ -33,6 +33,14 @@ public class User {
         return login;
     }
 
+    public String getPass() {
+        return pass;
+    }
+
+    public String getName() {
+        return name;
+    }
+
     public void setPass(String pass) {
         this.pass = pass;
     }

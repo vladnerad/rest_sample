@@ -3,6 +3,7 @@ package com.priselkov.rest_sample.service;
 import com.priselkov.rest_sample.model.User;
 import com.priselkov.rest_sample.repository.UserRepository;
 import com.priselkov.rest_sample.response.BasicResponse;
+import com.priselkov.rest_sample.util.UserValidator;
 import org.springframework.stereotype.Service;
 
 import java.util.Collections;
@@ -41,16 +42,22 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public BasicResponse addUserWithRoles(User newUser) {
-        userRepository.save(newUser);
-        return new BasicResponse(true, null);
+        if (UserValidator.getDescription(newUser) == null) {
+            userRepository.save(newUser);
+            return new BasicResponse(true, null);
+        } else {
+            return new BasicResponse(false, UserValidator.getDescription(newUser));
+        }
     }
 
     @Override
     public BasicResponse updateUser(String userLogin, User user) {
-        if (userRepository.findById(userLogin).isPresent() && user.getLogin() != null) {
-            userRepository.delete(userRepository.findById(userLogin).get());
-            userRepository.save(user);
-            return new BasicResponse(true, null);
+        if (userRepository.findById(userLogin).isPresent()) {
+            if (UserValidator.getDescription(user) == null) {
+                userRepository.delete(userRepository.findById(userLogin).get());
+                userRepository.save(user);
+                return new BasicResponse(true, null);
+            } else return new BasicResponse(false, UserValidator.getDescription(user));
         }
         return new BasicResponse(false, Collections.singletonList("User doesn't exist"));
     }
