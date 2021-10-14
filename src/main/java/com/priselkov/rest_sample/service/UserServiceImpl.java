@@ -5,7 +5,6 @@ import com.priselkov.rest_sample.repository.UserRepository;
 import com.priselkov.rest_sample.response.BasicResponse;
 import org.springframework.stereotype.Service;
 
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;

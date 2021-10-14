@@ -22,20 +22,20 @@ public class UserServiceLayerTest {
     private final User user = new User(userLogin, "testPass", "testName");
 
     @Test
-    public void addUserTest(){
+    public void addUserTest() {
         userService.addUserWithRoles(user);
         Mockito.verify(userRepository).save(user);
     }
 
     @Test
-    public void deleteUserTest(){
+    public void deleteUserTest() {
         userService.addUserWithRoles(user);
         userService.deleteUser(userLogin);
         Mockito.verify(userRepository).deleteById(userLogin);
     }
 
     @Test
-    public void updateUserTest(){
+    public void updateUserTest() {
 
         String userLogin = "testLogin";
         User userToUpd = new User(userLogin, "testPass", "testName");
