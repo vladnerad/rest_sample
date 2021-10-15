@@ -1,5 +1,6 @@
 package com.priselkov.rest_sample.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -38,8 +39,13 @@ public class UserController {
     }
 
     @GetMapping("/{userlogin}")
-    public ResponseEntity<User> getUser(@PathVariable String userlogin) {
-        return new ResponseEntity<>(userService.getUserWithRoles(userlogin), HttpStatus.OK);
+    public ResponseEntity<MappingJacksonValue> getUser(@PathVariable String userlogin) {
+        FilterProvider filterProvider = new SimpleFilterProvider()
+                .addFilter("userFilter", SimpleBeanPropertyFilter.serializeAll());
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(userService.getUserWithRoles(userlogin));
+        mappingJacksonValue.setFilters(filterProvider);
+
+        return new ResponseEntity<>(mappingJacksonValue, HttpStatus.OK);
     }
 
     @DeleteMapping("/{userlogin}")

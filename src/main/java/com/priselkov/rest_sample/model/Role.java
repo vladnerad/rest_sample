@@ -1,6 +1,7 @@
 package com.priselkov.rest_sample.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonValue;
 import org.hibernate.annotations.NaturalId;
 
 import javax.persistence.*;
@@ -16,6 +17,7 @@ public class Role {
     @Enumerated(EnumType.STRING)
     @NaturalId
     @Column(name = "name")
+    @JsonValue
     private RoleName name;
 
     public Role() {
