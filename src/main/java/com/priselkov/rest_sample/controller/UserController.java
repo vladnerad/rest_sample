@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
+import com.priselkov.rest_sample.model.RoleArray;
 import com.priselkov.rest_sample.model.User;
 import com.priselkov.rest_sample.response.BasicResponse;
 import com.priselkov.rest_sample.service.UserService;
@@ -66,6 +67,15 @@ public class UserController {
     @PutMapping("/{userlogin}")
     public ResponseEntity<BasicResponse> updateUser(@PathVariable String userlogin, @RequestBody User user) {
         BasicResponse basicResponse = userService.updateUser(userlogin, user);
+        if (basicResponse.getSuccess())
+            return new ResponseEntity<>(basicResponse, HttpStatus.OK);
+        else
+            return new ResponseEntity<>(basicResponse, HttpStatus.BAD_REQUEST);
+    }
+
+    @PostMapping("/{userlogin}")
+    public ResponseEntity<BasicResponse> updateUser(@PathVariable String userlogin, @RequestBody RoleArray roles) {
+        BasicResponse basicResponse = userService.updateUserRoles(userlogin, roles);
         if (basicResponse.getSuccess())
             return new ResponseEntity<>(basicResponse, HttpStatus.OK);
         else
