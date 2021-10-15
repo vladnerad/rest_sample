@@ -1,10 +1,12 @@
 package com.priselkov.rest_sample.model;
 
+import com.fasterxml.jackson.annotation.JsonFilter;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
 import javax.persistence.*;
 import java.util.List;
 
+@JsonFilter("userFilter")
 @Entity
 @Table(name = "users")
 public class User {
@@ -16,6 +18,7 @@ public class User {
     private String pass;
     @JsonProperty("name")
     private String name;
+    @JsonProperty("roles")
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(name = "user_role", joinColumns = @JoinColumn(name = "u_login", referencedColumnName = "login"), inverseJoinColumns = @JoinColumn(name = "role_id", referencedColumnName = "id"))
     private List<Role> roles;
@@ -39,6 +42,10 @@ public class User {
 
     public String getName() {
         return name;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
     }
 
     public void setPass(String pass) {

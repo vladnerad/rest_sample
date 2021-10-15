@@ -1,10 +1,14 @@
 package com.priselkov.rest_sample.controller;
 
+import com.fasterxml.jackson.databind.ser.FilterProvider;
+import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
+import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
 import com.priselkov.rest_sample.model.User;
 import com.priselkov.rest_sample.response.BasicResponse;
 import com.priselkov.rest_sample.service.UserService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.MappingJacksonValue;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,8 +24,17 @@ public class UserController {
     }
 
     @GetMapping("/all")
-    public ResponseEntity<List<User>> getAllUsers() {
-        return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
+    public ResponseEntity<MappingJacksonValue> getAllUsers() {
+        SimpleBeanPropertyFilter simpleBeanPropertyFilter =
+                SimpleBeanPropertyFilter.serializeAllExcept("roles");
+
+        FilterProvider filterProvider = new SimpleFilterProvider()
+                .addFilter("userFilter", simpleBeanPropertyFilter);
+
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(userService.getAllUsers());
+        mappingJacksonValue.setFilters(filterProvider);
+
+        return new ResponseEntity<>(mappingJacksonValue, HttpStatus.OK);
     }
 
     @GetMapping("/{userlogin}")

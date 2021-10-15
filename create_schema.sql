@@ -32,6 +32,9 @@ CREATE TABLE user_role (
   	PRIMARY KEY (u_login, role_id)
 );
 
-INSERT INTO roles (name) VALUES ('admin'), ('operator'), ('analizer');
+INSERT INTO roles (name) VALUES ('ROLE_ADMIN'),
+                                ('ROLE_USER'),
+                                ('ROLE_OPERATOR'),
+                                ('ROLE_ANALYTIC');
 
 INSERT INTO users (login, pass, name) VALUES ('vlad', '123', 'vladik');
