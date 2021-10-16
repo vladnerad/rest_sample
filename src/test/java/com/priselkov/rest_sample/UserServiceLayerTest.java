@@ -1,5 +1,7 @@
 package com.priselkov.rest_sample;
 
+import com.priselkov.rest_sample.model.Role;
+import com.priselkov.rest_sample.model.RoleName;
 import com.priselkov.rest_sample.model.User;
 import com.priselkov.rest_sample.repository.UserRepository;
 import com.priselkov.rest_sample.service.UserServiceImpl;
@@ -10,6 +12,8 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 @SpringBootTest
@@ -33,7 +37,6 @@ public class UserServiceLayerTest {
         User user = new User("testLogin", "validPass1", "testName");
         userService.addUserWithRoles(user);
         Mockito.verify(userRepository).save(user);
-
     }
 
     @Test
@@ -51,25 +54,6 @@ public class UserServiceLayerTest {
         Mockito.verify(userRepository, Mockito.never()).deleteById(user.getLogin());
     }
 
-//    @Test
-//    public void updateUser() {
-//
-//        String userLogin = "testLogin";
-//        User userToUpd = new User(userLogin, "testPass", "testName");
-//        User userNotExisted = new User(userLogin + "n/e", "random", "random");
-//
-//        userService.addUserWithRoles(userToUpd);
-//
-//        userToUpd.setPass("newPass");
-//        userToUpd.setName("newName");
-//
-//        userService.updateUser(userToUpd.getLogin(), userToUpd);
-//        userService.updateUser(userNotExisted.getLogin(), userNotExisted);
-//
-//        Mockito.verify(userRepository).save(userToUpd);
-//        Mockito.verify(userRepository, Mockito.never()).save(userNotExisted);
-//    }
-
     @Test
     public void updateUser_invalid() {
         User user = new User("testLogin", "invalidPass", "testName");
@@ -86,18 +70,36 @@ public class UserServiceLayerTest {
         Mockito.verify(userRepository).save(user);
     }
 
-//    @Test
-//    public void updateUserRoles_invalid() {
-//
-//        User user = new User("testLogin", "validPass1", "testName");
-//
-//        List<String> userRoles = new ArrayList<>();
-//        userRoles.add("ROLE_OPERATOR");
-//        userRoles.add("ROLE_ANALYTIC");
-//
-//        userService.updateUser(user.getLogin(), user);
-//
-//        Mockito.verify(userRepository).save(userToUpd);
-//        Mockito.verify(userRepository, Mockito.never()).save(userNotExisted);
-//    }
+    @Test
+    public void updateUserRoles_invalid() {
+        User user = new User();
+        List<Role> userRoles = new ArrayList<>();
+        try {
+            userRoles.add(new Role("ROLE_DOESNT_EXIST"));
+            userRoles.add(new Role(RoleName.ROLE_ANALYTIC));
+        } catch (IllegalArgumentException ignored){}
+
+        user.setRoles(userRoles);
+        userService.updateUserRoles(user.getLogin(), user);
+        Mockito.verify(userRepository, Mockito.never()).save(ArgumentMatchers.any(User.class));
+        Mockito.verify(userRepository, Mockito.never()).delete(ArgumentMatchers.any(User.class));
+    }
+
+    @Test
+    public void updateUserRoles_valid() {
+        User user = new User("testLogin", "validPass1", "testName");
+
+        Mockito.when(userRepository.findById(ArgumentMatchers.eq(user.getLogin()))).thenReturn(Optional.of(user));
+
+        List<Role> userRoles = new ArrayList<>();
+        try {
+            userRoles.add(new Role(RoleName.ROLE_ANALYTIC));
+        } catch (IllegalArgumentException ignored){}
+        user.setRoles(userRoles);
+
+        userService.updateUserRoles(user.getLogin(), user);
+
+        Mockito.verify(userRepository).delete(ArgumentMatchers.any(User.class));
+        Mockito.verify(userRepository).save(ArgumentMatchers.any(User.class));
+    }
 }
