@@ -72,15 +72,16 @@ public class UserServiceImpl implements UserService {
                 User oldUser = userRepository.findById(userLogin).get();
                 oldUser.setPass(user.getPass());
                 oldUser.setName(user.getName());
+                List<Role> roles;
                 if (user.getRoles() == null || user.getRoles().isEmpty()){
-                    user.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_USER).orElse(null)));
+                    roles = new ArrayList<>(Arrays.asList(roleRepository.findByName(RoleName.ROLE_USER).orElseThrow(IllegalArgumentException::new)));
                 } else {
-                    List<Role> roles = new ArrayList<>();
+                    roles = new ArrayList<>();
                     for (Role r: user.getRoles()){
                         roles.add(roleRepository.findByName(r.getName()).orElseThrow(IllegalArgumentException::new));
                     }
-                    oldUser.setRoles(roles);
                 }
+                oldUser.setRoles(roles);
                 userRepository.save(oldUser);
                 return new BasicResponse(true, null);
             } else return new BasicResponse(false, UserValidator.getDescription(user));
