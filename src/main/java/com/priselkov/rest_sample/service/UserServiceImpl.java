@@ -69,11 +69,19 @@ public class UserServiceImpl implements UserService {
     public BasicResponse updateUser(String userLogin, User user) {
         if (userRepository.findById(userLogin).isPresent()) {
             if (UserValidator.getDescription(user) == null) {
-                userRepository.delete(userRepository.findById(userLogin).get());
+                User oldUser = userRepository.findById(userLogin).get();
+                oldUser.setPass(user.getPass());
+                oldUser.setName(user.getName());
                 if (user.getRoles() == null || user.getRoles().isEmpty()){
                     user.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_USER).orElse(null)));
+                } else {
+                    List<Role> roles = new ArrayList<>();
+                    for (Role r: user.getRoles()){
+                        roles.add(roleRepository.findByName(r.getName()).orElseThrow(IllegalArgumentException::new));
+                    }
+                    oldUser.setRoles(roles);
                 }
-                userRepository.save(user);
+                userRepository.save(oldUser);
                 return new BasicResponse(true, null);
             } else return new BasicResponse(false, UserValidator.getDescription(user));
         }

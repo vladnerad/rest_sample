@@ -16,7 +16,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @NaturalId
-    @Column(name = "name", insertable = false)
+    @Column(name = "name", insertable = false, updatable = false, nullable = false)
     @JsonValue
     private RoleName name;
 
