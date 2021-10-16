@@ -39,7 +39,9 @@ public class UserController {
     public ResponseEntity<MappingJacksonValue> getUser(@PathVariable String userlogin) {
         FilterProvider filterProvider = new SimpleFilterProvider()
                 .addFilter("userFilter", SimpleBeanPropertyFilter.serializeAll());
-        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(userService.getUserWithRoles(userlogin));
+        User user = userService.getUserWithRoles(userlogin);
+        if (user == null) return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+        MappingJacksonValue mappingJacksonValue = new MappingJacksonValue(user);
         mappingJacksonValue.setFilters(filterProvider);
 
         return new ResponseEntity<>(mappingJacksonValue, HttpStatus.OK);
