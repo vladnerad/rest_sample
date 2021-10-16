@@ -1,7 +1,6 @@
 package com.priselkov.rest_sample;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.ObjectWriter;
 import com.fasterxml.jackson.databind.ser.FilterProvider;
 import com.fasterxml.jackson.databind.ser.impl.SimpleBeanPropertyFilter;
 import com.fasterxml.jackson.databind.ser.impl.SimpleFilterProvider;
@@ -55,6 +54,8 @@ public class UserControllerLayerTest {
             )
                     .andExpect(status().isCreated())
                     .andExpect(content().json(new ObjectMapper().writeValueAsString(new BasicResponse(true, null))));
+
+            Mockito.verify(userService).addUserWithRoles(ArgumentMatchers.any(User.class));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,89 +89,94 @@ public class UserControllerLayerTest {
         }
     }
 
-//    @Test
-//    public void updateUserRoles_success() {
-//        User user = new User("testLogin", "testPass", "testName");
-//        List<String> userRoles = new ArrayList<>();
-//        userRoles.add("ROLE_OPERATOR");
-//        userRoles.add("ROLE_ANALYTIC");
-//
-//        BasicResponse basicResponse = new BasicResponse(true, null);
-//
-//        Mockito.when(userService.updateUserRoles(user.getLogin(), userRoles)).thenReturn(basicResponse);
-//
-//        ObjectMapper mapper = new ObjectMapper();
-//
-//        try {
-//            mockMvc.perform(
-//                    MockMvcRequestBuilders.post("/api/users/" + user.getLogin())
-//                            .content(mapper.writeValueAsString(userRoles))
-//                            .contentType(MediaType.APPLICATION_JSON)
-//                            .accept(MediaType.APPLICATION_JSON)
-//            )
-//                    .andExpect(status().isOk())
-//                    .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
-//
-//            Mockito.verify(userService, Mockito.times(1)).updateUserRoles(ArgumentMatchers.eq(user.getLogin()), ArgumentMatchers.anyList());
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
-//    }
-
     @Test
-    public void updateUser_notFound() {
+    public void updateUserRoles_success() {
+        User user = new User("testLogin", "testPass", "testName");
+        List<Role> userRoles = new ArrayList<>();
+        userRoles.add(new Role(RoleName.ROLE_OPERATOR));
+        user.setRoles(userRoles);
 
-        User updated = new User("not_existed", "updated", "updated");
-        BasicResponse basicResponse = new BasicResponse(false, Collections.singletonList("User doesn't exist"));
+        BasicResponse basicResponse = new BasicResponse(true, null);
+
+        Mockito.when(userService.updateUserRoles(ArgumentMatchers.eq(user.getLogin()), ArgumentMatchers.any(User.class))).thenReturn(basicResponse);
+
         ObjectMapper mapper = new ObjectMapper();
         FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", SimpleBeanPropertyFilter.serializeAll());
         mapper.setFilterProvider(filters);
-        Mockito.when(userService.updateUser(ArgumentMatchers.eq(updated.getLogin()), ArgumentMatchers.any(User.class))).thenReturn(basicResponse);
 
         try {
             mockMvc.perform(
-                    MockMvcRequestBuilders.put("/api/users/" + updated.getLogin())
-                            .content(mapper.writeValueAsString(updated))
+                    MockMvcRequestBuilders.post("/api/users/" + user.getLogin())
+                            .content(mapper.writeValueAsString(user))
+                            .contentType(MediaType.APPLICATION_JSON)
+                            .accept(MediaType.APPLICATION_JSON)
+            )
+                    .andExpect(status().isOk())
+                    .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
+
+            Mockito.verify(userService, Mockito.times(1)).updateUserRoles(ArgumentMatchers.eq(user.getLogin()), ArgumentMatchers.any(User.class));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Test
+    public void updateUser_notFound() {
+        User user = new User("not_existed", "updated", "updated");
+        List<Role> userRoles = new ArrayList<>();
+        userRoles.add(new Role(RoleName.ROLE_OPERATOR));
+        user.setRoles(userRoles);
+
+        BasicResponse basicResponse = new BasicResponse(false, Collections.singletonList("User doesn't exist"));
+
+        Mockito.when(userService.updateUser(ArgumentMatchers.eq(user.getLogin()), ArgumentMatchers.any(User.class))).thenReturn(basicResponse);
+
+        ObjectMapper mapper = new ObjectMapper();
+        FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", SimpleBeanPropertyFilter.serializeAll());
+        mapper.setFilterProvider(filters);
+        try {
+            mockMvc.perform(
+                    MockMvcRequestBuilders.put("/api/users/" + user.getLogin())
+                            .content(mapper.writeValueAsString(user))
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
             )
                     .andExpect(status().isBadRequest())
                     .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
-
+            Mockito.verify(userService).updateUser(ArgumentMatchers.eq(user.getLogin()), ArgumentMatchers.any(User.class));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        Mockito.verify(userService, Mockito.times(1)).updateUser(ArgumentMatchers.eq(updated.getLogin()), ArgumentMatchers.any(User.class));
     }
 
     @Test
     public void updateUserRoles_notFound() {
-
-        User updated = new User("not_existed", "updated", "updated");
-        List<String> userRoles = new ArrayList<>();
-        userRoles.add("ROLE_OPERATOR");
-        userRoles.add("ROLE_ANALYTIC");
+        User user = new User("not_existed", "updated", "updated");
+        List<Role> userRoles = new ArrayList<>();
+        userRoles.add(new Role(RoleName.ROLE_OPERATOR));
+        user.setRoles(userRoles);
 
         BasicResponse basicResponse = new BasicResponse(false, Collections.singletonList("User doesn't exist"));
+
+        Mockito.when(userService.updateUserRoles(ArgumentMatchers.eq(user.getLogin()), ArgumentMatchers.any(User.class))).thenReturn(basicResponse);
+
         ObjectMapper mapper = new ObjectMapper();
-//        Mockito.when(userService.updateUserRoles(updated.getLogin(), userRoles)).thenReturn(basicResponse);
+        FilterProvider filters = new SimpleFilterProvider().addFilter("userFilter", SimpleBeanPropertyFilter.serializeAll());
+        mapper.setFilterProvider(filters);
 
         try {
             mockMvc.perform(
-                    MockMvcRequestBuilders.post("/api/users/" + updated.getLogin())
-                            .content(mapper.writeValueAsString(userRoles))
+                    MockMvcRequestBuilders.post("/api/users/" + user.getLogin())
+                            .content(mapper.writeValueAsString(user))
                             .contentType(MediaType.APPLICATION_JSON)
                             .accept(MediaType.APPLICATION_JSON)
             )
                     .andExpect(status().isBadRequest())
                     .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
-
+            Mockito.verify(userService).updateUserRoles(ArgumentMatchers.eq(user.getLogin()), ArgumentMatchers.any(User.class));
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-//        Mockito.verify(userService, Mockito.times(1)).updateUserRoles(updated.getLogin(), userRoles);
     }
 
     @Test
@@ -187,12 +193,10 @@ public class UserControllerLayerTest {
             )
                     .andExpect(status().isOk())
                     .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
-
+            Mockito.verify(userService, Mockito.times(1)).deleteUser(user.getLogin());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        Mockito.verify(userService, Mockito.times(1)).deleteUser(user.getLogin());
     }
 
     @Test
@@ -209,11 +213,9 @@ public class UserControllerLayerTest {
             )
                     .andExpect(status().isBadRequest())
                     .andExpect(content().json(mapper.writeValueAsString(basicResponse)));
-
+            Mockito.verify(userService).deleteUser(deleted.getLogin());
         } catch (Exception e) {
             e.printStackTrace();
         }
-
-        Mockito.verify(userService, Mockito.times(1)).deleteUser(deleted.getLogin());
     }
 }
