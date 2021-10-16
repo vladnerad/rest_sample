@@ -93,10 +93,12 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findById(userLogin).isPresent()) {
             User user = userRepository.findById(userLogin).orElse(null);
             if (user != null) {
-                List<Role> roleList = new ArrayList<>(updUser.getRoles());
-                user.setRoles(roleList);
-                updateUser(userLogin, user);
-                return new BasicResponse(true, null);
+                List<Role> newRoles = updUser.getRoles();
+                if (newRoles != null && !newRoles.isEmpty()) {
+                    user.setRoles(newRoles);
+                    updateUser(userLogin, user);
+                    return new BasicResponse(true, null);
+                } else return new BasicResponse(false, Collections.singletonList("User roles array is empty"));
             }
         }
         return new BasicResponse(false, Collections.singletonList("User doesn't exist"));
