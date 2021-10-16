@@ -3,6 +3,7 @@ package com.priselkov.rest_sample;
 import com.priselkov.rest_sample.model.Role;
 import com.priselkov.rest_sample.model.RoleName;
 import com.priselkov.rest_sample.model.User;
+import com.priselkov.rest_sample.repository.RoleRepository;
 import com.priselkov.rest_sample.repository.UserRepository;
 import com.priselkov.rest_sample.service.UserServiceImpl;
 import org.junit.jupiter.api.Test;
@@ -21,6 +22,8 @@ public class UserServiceLayerTest {
 
     @Mock
     private UserRepository userRepository;
+    @Mock
+    private RoleRepository roleRepository;
 
     @InjectMocks
     private UserServiceImpl userService;
@@ -75,8 +78,8 @@ public class UserServiceLayerTest {
         User user = new User();
         List<Role> userRoles = new ArrayList<>();
         try {
-            userRoles.add(new Role("ROLE_DOESNT_EXIST"));
-            userRoles.add(new Role(RoleName.ROLE_ANALYTIC));
+            userRoles.add(roleRepository.findByName(RoleName.valueOf("ROLE_DOESNT_EXIST")).orElse(null));
+            userRoles.add(roleRepository.findByName(RoleName.ROLE_ANALYTIC).orElse(null));
         } catch (IllegalArgumentException ignored){}
 
         user.setRoles(userRoles);

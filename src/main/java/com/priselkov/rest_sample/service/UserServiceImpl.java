@@ -3,6 +3,7 @@ package com.priselkov.rest_sample.service;
 import com.priselkov.rest_sample.model.Role;
 import com.priselkov.rest_sample.model.RoleName;
 import com.priselkov.rest_sample.model.User;
+import com.priselkov.rest_sample.repository.RoleRepository;
 import com.priselkov.rest_sample.repository.UserRepository;
 import com.priselkov.rest_sample.response.BasicResponse;
 import com.priselkov.rest_sample.util.UserValidator;
@@ -14,15 +15,16 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
         this.userRepository = userRepository;
+        this.roleRepository = roleRepository;
     }
 
     @Override
     public List<User> getAllUsers() {
-        List<User> allUsers = new LinkedList<>();
-        userRepository.findAll().forEach(allUsers::add);
+        List<User> allUsers = new LinkedList<>(userRepository.findAll());
         allUsers.forEach(user -> user.setRoles(null));
         return allUsers;
     }
@@ -50,10 +52,10 @@ public class UserServiceImpl implements UserService {
             List<Role> roles = new ArrayList<>();
             if (newUser.getRoles() != null && !newUser.getRoles().isEmpty()) {
                 for (Role role : newUser.getRoles()) {
-                    roles.add(new Role(role.getName()));
+                    roles.add(roleRepository.findByName(role.getName()).orElse(null));
                 }
             } else {
-                roles.add(new Role(RoleName.ROLE_USER));
+                roles.add(roleRepository.findByName(RoleName.ROLE_USER).orElse(null));
             }
             newUser.setRoles(roles);
             userRepository.save(newUser);
@@ -68,6 +70,9 @@ public class UserServiceImpl implements UserService {
         if (userRepository.findById(userLogin).isPresent()) {
             if (UserValidator.getDescription(user) == null) {
                 userRepository.delete(userRepository.findById(userLogin).get());
+                if (user.getRoles() == null || user.getRoles().isEmpty()){
+                    user.setRoles(Collections.singletonList(roleRepository.findByName(RoleName.ROLE_USER).orElse(null)));
+                }
                 userRepository.save(user);
                 return new BasicResponse(true, null);
             } else return new BasicResponse(false, UserValidator.getDescription(user));

@@ -16,7 +16,7 @@ public class Role {
 
     @Enumerated(EnumType.STRING)
     @NaturalId
-    @Column(name = "name")
+    @Column(name = "name", insertable = false)
     @JsonValue
     private RoleName name;
 
@@ -35,15 +35,15 @@ public class Role {
         return name;
     }
 
-    public void setName(RoleName name) {
-        this.name = name;
-    }
-
     public Long getId() {
         return id;
     }
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public void setName(RoleName name) {
+        this.name = name;
     }
 }
