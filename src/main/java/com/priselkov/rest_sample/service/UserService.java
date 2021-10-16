@@ -1,6 +1,5 @@
 package com.priselkov.rest_sample.service;
 
-import com.priselkov.rest_sample.model.RoleArray;
 import com.priselkov.rest_sample.model.User;
 import com.priselkov.rest_sample.response.BasicResponse;
 
@@ -25,5 +24,5 @@ public interface UserService {
     //Если в запросе на редактирование передан массив ролей,
     //система должна обновить список ролей пользователя в БД - новые привязки добавить,
     //неактуальные привязки удалить.
-    BasicResponse updateUserRoles(String userLogin, RoleArray roleArray);
+    BasicResponse updateUserRoles(String userLogin, User user);
 }

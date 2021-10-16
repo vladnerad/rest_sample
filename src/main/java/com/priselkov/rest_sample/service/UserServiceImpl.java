@@ -1,14 +1,12 @@
 package com.priselkov.rest_sample.service;
 
 import com.priselkov.rest_sample.model.Role;
-import com.priselkov.rest_sample.model.RoleArray;
 import com.priselkov.rest_sample.model.RoleName;
 import com.priselkov.rest_sample.model.User;
 import com.priselkov.rest_sample.repository.RoleRepository;
 import com.priselkov.rest_sample.repository.UserRepository;
 import com.priselkov.rest_sample.response.BasicResponse;
 import com.priselkov.rest_sample.util.UserValidator;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
@@ -49,7 +47,6 @@ public class UserServiceImpl implements UserService {
     @Override
     public BasicResponse addUserWithRoles(User newUser) {
         if (UserValidator.getDescription(newUser) == null) {
-
             List<Role> roles = new ArrayList<>();
             if (newUser.getRoles() != null && !newUser.getRoles().isEmpty()) {
                 for (Role role : newUser.getRoles()) {
@@ -59,9 +56,7 @@ public class UserServiceImpl implements UserService {
                 roles.add(new Role(RoleName.ROLE_USER));
             }
             newUser.setRoles(roles);
-
             userRepository.save(newUser);
-
             return new BasicResponse(true, null);
         } else {
             return new BasicResponse(false, UserValidator.getDescription(newUser));
@@ -81,12 +76,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public BasicResponse updateUserRoles(String userLogin, RoleArray roles) {
+    public BasicResponse updateUserRoles(String userLogin, User updUser) {
         if (userRepository.findById(userLogin).isPresent()) {
             User user = userRepository.findById(userLogin).orElse(null);
             if (user != null) {
-                List<Role> roleList = new ArrayList<>();
-                Arrays.asList(roles.getRoles()).forEach(r -> roleList.add(new Role(r)));
+                List<Role> roleList = new ArrayList<>(updUser.getRoles());
                 user.setRoles(roleList);
                 updateUser(userLogin, user);
                 return new BasicResponse(true, null);
