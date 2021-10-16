@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS users CASCADE;
 CREATE TABLE users (
 	login VARCHAR(255) PRIMARY KEY,
 	pass VARCHAR(255) NOT NULL,
-	name VARCHAR(255) NOT NULL DEFAULT 'anonim'
+	name VARCHAR(255) NOT NULL DEFAULT 'ROLE_USER'
 );
 
 DROP TABLE IF EXISTS roles CASCADE;
@@ -36,5 +36,3 @@ INSERT INTO roles (name) VALUES ('ROLE_ADMIN'),
                                 ('ROLE_USER'),
                                 ('ROLE_OPERATOR'),
                                 ('ROLE_ANALYTIC');
-
-INSERT INTO users (login, pass, name) VALUES ('vlad', '123', 'vladik');

@@ -3,7 +3,6 @@ package com.priselkov.rest_sample.service;
 import com.priselkov.rest_sample.model.Role;
 import com.priselkov.rest_sample.model.RoleName;
 import com.priselkov.rest_sample.model.User;
-import com.priselkov.rest_sample.repository.RoleRepository;
 import com.priselkov.rest_sample.repository.UserRepository;
 import com.priselkov.rest_sample.response.BasicResponse;
 import com.priselkov.rest_sample.util.UserValidator;
@@ -15,11 +14,9 @@ import java.util.*;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
-    private final RoleRepository roleRepository;
 
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository) {
+    public UserServiceImpl(UserRepository userRepository) {
         this.userRepository = userRepository;
-        this.roleRepository = roleRepository;
     }
 
     @Override
@@ -47,10 +44,13 @@ public class UserServiceImpl implements UserService {
     @Override
     public BasicResponse addUserWithRoles(User newUser) {
         if (UserValidator.getDescription(newUser) == null) {
+            if (userRepository.findById(newUser.getLogin()).isPresent()) {
+                return new BasicResponse(false, Collections.singletonList("User with this login already exists"));
+            }
             List<Role> roles = new ArrayList<>();
             if (newUser.getRoles() != null && !newUser.getRoles().isEmpty()) {
                 for (Role role : newUser.getRoles()) {
-                    roles.add(roleRepository.findByName(role.getName()).orElse(null));
+                    roles.add(new Role(role.getName()));
                 }
             } else {
                 roles.add(new Role(RoleName.ROLE_USER));
