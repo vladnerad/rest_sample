@@ -1,7 +1,7 @@
 Описание API
 Взаимодействие с API происходит по URL: localhost:8080/api/users/
 1. Получить список всех пользователей (без ролей):
-GET localhost:8080/api/users/all
+GET localhost:8080/api/users
 2. Получить пользователя и его роли:
 GET localhost:8080/api/users/{login}
 3. Удалить пользователя:

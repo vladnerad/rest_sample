@@ -21,7 +21,7 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping("/all")
+    @GetMapping()
     public ResponseEntity<MappingJacksonValue> getAllUsers() {
         SimpleBeanPropertyFilter simpleBeanPropertyFilter =
                 SimpleBeanPropertyFilter.serializeAllExcept("roles");

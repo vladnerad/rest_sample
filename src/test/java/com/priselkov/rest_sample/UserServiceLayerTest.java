@@ -68,8 +68,8 @@ public class UserServiceLayerTest {
     public void updateUser_success() {
         User user = new User("testLogin", "validPass1", "testName");
         Mockito.when(userRepository.findById(ArgumentMatchers.eq(user.getLogin()))).thenReturn(Optional.of(user));
+        Mockito.when(roleRepository.findByName(RoleName.ROLE_USER)).thenReturn(Optional.of(new Role(RoleName.ROLE_USER)));
         userService.updateUser(user.getLogin(), user);
-        Mockito.verify(userRepository).delete(user);
         Mockito.verify(userRepository).save(user);
     }
 
@@ -93,6 +93,7 @@ public class UserServiceLayerTest {
         User user = new User("testLogin", "validPass1", "testName");
 
         Mockito.when(userRepository.findById(ArgumentMatchers.eq(user.getLogin()))).thenReturn(Optional.of(user));
+        Mockito.when(roleRepository.findByName(Mockito.any())).thenReturn(Optional.of(new Role(RoleName.ROLE_USER)));
 
         List<Role> userRoles = new ArrayList<>();
         try {
@@ -102,7 +103,6 @@ public class UserServiceLayerTest {
 
         userService.updateUserRoles(user.getLogin(), user);
 
-        Mockito.verify(userRepository).delete(ArgumentMatchers.any(User.class));
         Mockito.verify(userRepository).save(ArgumentMatchers.any(User.class));
     }
 }
